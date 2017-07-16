@@ -4,18 +4,19 @@ import ContactList from './ContactList.jsx'
 import Search from './Search.jsx'
 import './style.less'
 
-let list = [
-    {
-        id: 1,
-        name: '老王',
-        tel: 112121
-    },
-    {
-        id: 2,
-        name: '老李',
-        tel: 112121
-    }
-]
+// let list = [
+//     {
+//         id: 1,
+//         name: '老王',
+//         tel: 112121
+//     },
+//     {
+//         id: 2,
+//         name: '老李',
+//         tel: 112121
+//     }
+// ]
+let list = []
 
 class App extends React.Component {
     constructor(props) {
@@ -23,6 +24,7 @@ class App extends React.Component {
         this.state = {
             list: list
         }
+        this.init()
     }
     render() {
         return <div>
@@ -35,9 +37,15 @@ class App extends React.Component {
     }
     onDelete(id) {
         let newList = this.state.list.filter(item => item.id !== id)
-        this.setState({
-            list: newList
-        })
+        fetch('http://localhost:8090/delete?id=' + id)
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    this.setState({
+                        list: newList
+                    })
+                }
+            })
     }
     onSearchInput(e) {
         let keyword = e.target.value
@@ -52,6 +60,16 @@ class App extends React.Component {
                 list: list
             })
         }
+    }
+    init() {
+        fetch('http://localhost:8090/list')
+            .then(res => res.json())
+            .then(data => {
+                list = data
+                this.setState({
+                    list: data
+                })
+            })
     }
 }
 
